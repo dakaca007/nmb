@@ -5,14 +5,26 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir))
 
 import streamlit as st
 from gpt4free import you
+from gpt4free import forefront
 
 
 def get_answer(question: str) -> str:
     # Set cloudflare clearance cookie and get answer from GPT-4 model
     try:
-        result = you.Completion.create(prompt=question)
+        account_data = forefront.Account.create(logging=False)
 
-        return result.text
+        # get a response
+        for response in forefront.StreamingCompletion.create(
+            account_data=account_data,
+            prompt='hello world',
+            model='gpt-4'
+        ):
+          print(response.choices[0].text, end='')
+        print("")
+        
+         
+
+        return response.choices[0].text
 
     except Exception as e:
         # Return error message if an exception occurs
